@@ -1,0 +1,34 @@
+{
+  "template": "https://github.com/JoseRZapata/data-science-project-template",
+  "commit": "c60a8e1b54de7dadaa277513b87bcecceb2ecbf2",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "MTA-NYCTrains",
+      "repo_name": "MTA-NYCTrains",
+      "github_username": "Susanagg05",
+      "author_name": "Susana Gutierrez & Alejandro Londoño",
+      "author_email": "peter.parker@web.com",
+      "description": "This repository implements a real-time data processing and analysis system for MTA NYC trains",
+      "compatible_python_versions": "3.12",
+      "mkdocs": false,
+      "codecov": true,
+      "license": "MIT License",
+      "_copy_without_render": [
+        ".code_quality/*",
+        ".vscode/*",
+        "config/*",
+        "data/*",
+        "src/*",
+        "tests/*",
+        ".editorconfig",
+        ".pre-commit-config.yaml",
+        "codecov.yaml",
+        "docs/*"
+      ],
+      "_template": "https://github.com/JoseRZapata/data-science-project-template",
+      "_commit": "c60a8e1b54de7dadaa277513b87bcecceb2ecbf2"
+    }
+  },
+  "directory": null
+}
