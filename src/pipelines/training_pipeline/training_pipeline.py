@@ -1,13 +1,12 @@
-import json
 import os
 import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
-import numpy as np
 
 import hopsworks
 import matplotlib.pyplot as plt
+import numpy as np
 from loguru import logger
 from sklearn.metrics import mean_squared_error, r2_score
 from xgboost import XGBRegressor, plot_importance
@@ -19,7 +18,8 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 import config  # noqa: E402
 
-def run_training():
+
+def run_training() -> None:
     settings = config.HopsworksSettings(_env_file=_PROJECT_ROOT / ".env")
     warnings.filterwarnings("ignore")
 
@@ -38,17 +38,19 @@ def run_training():
 
     logger.info("🧠 Seleccionando features para entrenamiento")
     # Selección de columnas relevantes
-    selected_features = covid_fg.select([
-        "case_count",
-        "probable_case_count",
-        "hospitalized_count",
-        "case_count_7day_avg",
-        "all_case_count_7day_avg",
-        "hosp_count_7day_avg",
-        "death_count_7day_avg",
-        "date_of_interest",
-        "death_count",  # Etiqueta
-    ])
+    selected_features = covid_fg.select(
+        [
+            "case_count",
+            "probable_case_count",
+            "hospitalized_count",
+            "case_count_7day_avg",
+            "all_case_count_7day_avg",
+            "hosp_count_7day_avg",
+            "death_count_7day_avg",
+            "date_of_interest",
+            "death_count",  # Etiqueta
+        ]
+    )
 
     logger.info("📚 Creando Feature View")
     feature_view = fs.get_or_create_feature_view(
@@ -99,7 +101,6 @@ def run_training():
     images_dir = model_dir / "images"
     os.makedirs(images_dir, exist_ok=True)
 
-
     # Gráfico de importancia de variables
     plot_importance(model, max_num_features=6)
     plt.tight_layout()
@@ -125,6 +126,7 @@ def run_training():
     covid_model.save(str(model_dir))
 
     logger.success("✅ Entrenamiento y registro del modelo completado exitosamente.")
+
 
 if __name__ == "__main__":
     run_training()
