@@ -130,3 +130,11 @@ out/
 
 # Spyder
 .spyproject/
+
+
+# Ignorar modelos guardados localmente
+models/
+!models/.gitkeep  # si quieres mantener la carpeta vacía en Git
+
+# Ignorar artefactos de experiment tracking
+mlruns/
