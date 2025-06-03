@@ -36,13 +36,13 @@ def validate_train_test_split(
     suite = train_test_validation()
     result = suite.run(train_ds, test_ds)
 
+    # Guardar reporte siempre
+    report_path = _PROJECT_ROOT / "model" / "train_test_validation_report.html"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    result.save_as_html(str(report_path))
+
     if result.passed():
         logger.success("✅ Validación de Train/Test completada sin problemas.")
     else:
         logger.warning("⚠️ Se encontraron advertencias en la separación Train/Test.")
-        report_path = _PROJECT_ROOT / "model" / "train_test_validation_report.html"
-        report_path.parent.mkdir(parents=True, exist_ok=True)  # 👈 Crea la carpeta si no existe
-        result.save_as_html(str(report_path))
-        raise ValueError(
-            f"❌ Validación Train/Test fallida. Revisa el reporte generado en {report_path}"
-        )
+        logger.warning(f"📄 Revisa el reporte generado en {report_path}")

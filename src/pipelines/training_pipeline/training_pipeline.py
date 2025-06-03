@@ -9,8 +9,17 @@ from pathlib import Path
 import hopsworks
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+from deepchecks.tabular import Dataset
+from deepchecks.tabular.suites import model_evaluation
 from loguru import logger
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import (
+    make_scorer,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+)
+from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 from xgboost import XGBRegressor, plot_importance
 
 # Ruta raíz del proyecto
@@ -23,6 +32,7 @@ for path in [str(_PROJECT_ROOT), str(SRC_PATH)]:
 
 import config
 from src.pipelines.training_pipeline.utils import validate_train_test_split
+
 
 def run_training() -> None:
     settings = config.HopsworksSettings(_env_file=_PROJECT_ROOT / ".env")
@@ -78,48 +88,79 @@ def run_training() -> None:
     X_train = X_train.drop(["date_of_interest"], axis=1)
     X_test = X_test.drop(["date_of_interest"], axis=1)
 
-    logger.info("🏋️ Entrenando modelo XGBoost")
+    # 🔁 Validación cruzada con TimeSeriesSplit
+    logger.info("🔁 Ejecutando validación cruzada con TimeSeriesSplit...")
     model = XGBRegressor()
+    tscv = TimeSeriesSplit(n_splits=5)
+    mae_scorer = make_scorer(mean_absolute_error)
+
+    cv_scores = cross_val_score(model, X_train, y_train.values.ravel(), cv=tscv, scoring=mae_scorer)
+    logger.info(f"📉 MAE en CV: {cv_scores.mean():.2f} ± {cv_scores.std():.2f}")
+
+    # ==================== Entrenamiento final ====================
+    logger.info("🏋️ Entrenando modelo XGBoost")
     model.fit(X_train, y_train)
 
     logger.info("🔮 Generando predicciones")
     y_pred = model.predict(X_test)
 
-    # Evaluación del modelo
+    # ==================== Evaluación ====================
+    mae = mean_absolute_error(y_test.iloc[:, 0], y_pred)
     mse = mean_squared_error(y_test.iloc[:, 0], y_pred)
     r2 = r2_score(y_test.iloc[:, 0], y_pred)
+
+    logger.success(f"MAE: {mae:.2f}")
     logger.success(f"MSE: {mse:.2f}")
     logger.success(f"R²: {r2:.4f}")
 
+    if mae > cv_scores.mean() * 1.2:
+        logger.warning("⚠️ Posible underfitting detectado (test MAE mucho mayor que CV).")
+    elif mae < cv_scores.mean() * 0.8:
+        logger.warning("⚠️ Posible overfitting detectado (test MAE mucho menor que CV).")
+    else:
+        logger.info("✅ Comportamiento generalizado entre CV y Test.")
+
+    # ==================== Dataframe final ====================
     logger.info("🧾 Construyendo dataframe final de resultados")
-
-    # Clonamos y_test para mantener index original
     df = y_test.copy()
-    df["predicted_deaths"] = y_pred
     df["predicted_deaths"] = np.round(y_pred).astype(int)
-
     df["date_of_interest"] = dates
     df = df.sort_values(by="date_of_interest")
 
-    # Visualización y exportación
-    logger.info("🎨 Exportando visualizaciones")
+    # ==================== Reporte Deepchecks ====================
+    logger.info("🧪 Ejecutando evaluación del modelo con Deepchecks")
+    train_ds = Dataset(pd.concat([X_train, y_train], axis=1), label="death_count")
+    test_ds = Dataset(pd.concat([X_test, y_test], axis=1), label="death_count")
+
+    suite = model_evaluation()
+    result = suite.run(train_ds, test_ds, model)
 
     model_dir = _PROJECT_ROOT / "model"
-    images_dir = model_dir / "images"
-    os.makedirs(images_dir, exist_ok=True)
+    model_dir.mkdir(parents=True, exist_ok=True)
+    result.save_as_html(str(model_dir / "model_evaluation_report.html"))
+    logger.info(
+        f"📄 Reporte de evaluación guardado en {model_dir / 'model_evaluation_report.html'}"
+    )
 
-    # Gráfico de importancia de variables
+    # ==================== Visualización ====================
+    logger.info("🎨 Exportando visualizaciones")
+    images_dir = model_dir / "images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+
     plot_importance(model, max_num_features=6)
     plt.tight_layout()
     plt.savefig(images_dir / "feature_importance.png")
 
-    # 💾 Guardado del modelo
+    # ==================== Guardado del modelo ====================
     logger.info("💾 Guardando modelo y métricas")
     model.save_model(model_dir / "model.json")
 
     metrics = {
+        "MAE": f"{mae:.2f}",
         "MSE": f"{mse:.2f}",
         "R2": f"{r2:.4f}",
+        "CV_MAE_mean": f"{cv_scores.mean():.2f}",
+        "CV_MAE_std": f"{cv_scores.std():.2f}",
     }
 
     mr = project.get_model_registry()
@@ -129,7 +170,6 @@ def run_training() -> None:
         feature_view=feature_view,
         description="Predicción de muertes por COVID-19 en NYC con XGBoost",
     )
-
     covid_model.save(str(model_dir))
 
     logger.success("✅ Entrenamiento y registro del modelo completado exitosamente.")
