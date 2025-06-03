@@ -14,7 +14,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 from xgboost import XGBRegressor, plot_importance
 
 # Ruta raíz del proyecto
-# Ruta raíz del proyecto
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 SRC_PATH = _PROJECT_ROOT / "src"
 
@@ -24,7 +23,6 @@ for path in [str(_PROJECT_ROOT), str(SRC_PATH)]:
 
 import config
 from src.pipelines.training_pipeline.utils import validate_train_test_split
-
 
 def run_training() -> None:
     settings = config.HopsworksSettings(_env_file=_PROJECT_ROOT / ".env")

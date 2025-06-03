@@ -9,7 +9,7 @@ requires-python = ">=3.12"
 readme = "README.md"
 
 dependencies = [
-
+    "hopsworks>=3.0.5"
 ]
 
 [project.urls]
