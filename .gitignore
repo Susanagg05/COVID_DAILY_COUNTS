@@ -131,7 +131,6 @@ out/
 # Spyder
 .spyproject/
 
-
 # Evitar subir modelos locales
 models/
 
