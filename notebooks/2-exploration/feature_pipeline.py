@@ -112,7 +112,6 @@ covid_df.rename(
 try:
     from src.validations.covid_schema import covid_schema
 
-
     covid_df = covid_schema.validate(covid_df)
     logger.info("✔️ Validación completada")
 except ImportError:
