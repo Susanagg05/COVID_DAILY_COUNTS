@@ -34,9 +34,8 @@ jobs:
         uses: astral-sh/setup-uv@v6
       - run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
 
-    test:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -51,7 +50,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Fallback: install requirements.txt
+      - name: "Fallback: install requirements.txt"
         run: pip install -r requirements.txt
 
       - name: Run pytest with coverage
