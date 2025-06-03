@@ -1,3 +1,5 @@
+# ruff: noqa: E402, PLR0915
+
 import os
 import sys
 import warnings
@@ -20,7 +22,7 @@ for path in [str(_PROJECT_ROOT), str(SRC_PATH)]:
     if path not in sys.path:
         sys.path.insert(0, path)
 
-import config  # noqa: E402
+import config
 from src.pipelines.training_pipeline.utils import validate_train_test_split
 
 
@@ -71,9 +73,7 @@ def run_training() -> None:
     test_start = datetime.strptime("2022-02-01", "%Y-%m-%d")
     X_train, X_test, y_train, y_test = feature_view.train_test_split(test_start=test_start)
 
-
     validate_train_test_split(X_train, X_test, y_train, y_test)
-
 
     logger.info("🧼 Preprocesando: eliminando columnas clave")
     dates = X_test["date_of_interest"].copy()

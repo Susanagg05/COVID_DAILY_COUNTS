@@ -1,9 +1,11 @@
 import pandas as pd
 import pytest
+
 from src.pipelines.training_pipeline.utils import validate_train_test_split
 
+
 # Caso válido: misma distribución
-def test_validate_train_test_split_pass():
+def test_validate_train_test_split_pass() -> None:
     data = {
         "feature1": list(range(100)),
         "feature2": list(range(100, 200)),
@@ -27,18 +29,23 @@ def test_validate_train_test_split_pass():
     # Ahora sí: debería pasar
     validate_train_test_split(X_train, X_test, y_train, y_test, label="target")
 
+
 # Caso inválido: distribución de label totalmente distinta
-def test_validate_train_test_split_fail():
-    X_train = pd.DataFrame({
-        "feature1": list(range(50)),
-        "feature2": list(range(100, 150)),
-    })
+def test_validate_train_test_split_fail() -> None:
+    X_train = pd.DataFrame(
+        {
+            "feature1": list(range(50)),
+            "feature2": list(range(100, 150)),
+        }
+    )
     y_train = pd.Series([0] * 50)
 
-    X_test = pd.DataFrame({
-        "feature1": list(range(50, 100)),
-        "feature2": list(range(150, 200)),
-    })
+    X_test = pd.DataFrame(
+        {
+            "feature1": list(range(50, 100)),
+            "feature2": list(range(150, 200)),
+        }
+    )
     y_test = pd.Series([1] * 50)
 
     with pytest.raises(ValueError, match="Validación Train/Test fallida"):
