@@ -1,6 +1,6 @@
-import pandas as pd
-import pytest
 from pathlib import Path
+
+import pandas as pd
 
 from src.pipelines.training_pipeline.utils import validate_train_test_split
 
@@ -33,16 +33,20 @@ def test_validate_train_test_split_pass() -> None:
 
 # Caso inválido: distribución de label totalmente distinta
 def test_validate_train_test_split_fail() -> None:
-    X_train = pd.DataFrame({
-        "feature1": list(range(50)),
-        "feature2": list(range(100, 150)),
-    })
+    X_train = pd.DataFrame(
+        {
+            "feature1": list(range(50)),
+            "feature2": list(range(100, 150)),
+        }
+    )
     y_train = pd.Series([0] * 50, name="target")
 
-    X_test = pd.DataFrame({
-        "feature1": list(range(50, 100)),
-        "feature2": list(range(150, 200)),
-    })
+    X_test = pd.DataFrame(
+        {
+            "feature1": list(range(50, 100)),
+            "feature2": list(range(150, 200)),
+        }
+    )
     y_test = pd.Series([1] * 50, name="target")
 
     # No debe lanzar error, solo generar el archivo HTML
