@@ -130,3 +130,22 @@ out/
 
 # Spyder
 .spyproject/
+
+
+# Evitar subir modelos locales
+models/
+
+# Evitar subir resultados de experiment tracking con MLflow
+notebooks/**/mlruns/
+mlruns/
+
+# Evitar subir archivos temporales de Python y notebooks
+__pycache__/
+*.pyc
+*.ipynb_checkpoints/
+
+# Evitar subir lockfiles específicos del entorno virtual
+.venv/
+.env
+
+model/*.html
