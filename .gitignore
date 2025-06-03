@@ -131,10 +131,20 @@ out/
 # Spyder
 .spyproject/
 
-
-# Ignorar modelos guardados localmente
+# Evitar subir modelos locales
 models/
-!models/.gitkeep  # si quieres mantener la carpeta vacía en Git
 
-# Ignorar artefactos de experiment tracking
+# Evitar subir resultados de experiment tracking con MLflow
+notebooks/**/mlruns/
 mlruns/
+
+# Evitar subir archivos temporales de Python y notebooks
+__pycache__/
+*.pyc
+*.ipynb_checkpoints/
+
+# Evitar subir lockfiles específicos del entorno virtual
+.venv/
+.env
+
+model/*.html

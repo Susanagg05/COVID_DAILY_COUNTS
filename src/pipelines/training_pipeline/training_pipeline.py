@@ -1,3 +1,5 @@
+# ruff: noqa: E402, PLR0915
+
 import os
 import sys
 import warnings
@@ -13,11 +15,14 @@ from xgboost import XGBRegressor, plot_importance
 
 # Ruta raíz del proyecto
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
+SRC_PATH = _PROJECT_ROOT / "src"
 
-import config  # noqa: E402
+for path in [str(_PROJECT_ROOT), str(SRC_PATH)]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
+import config
+from src.pipelines.training_pipeline.utils import validate_train_test_split
 
 def run_training() -> None:
     settings = config.HopsworksSettings(_env_file=_PROJECT_ROOT / ".env")
@@ -65,6 +70,8 @@ def run_training() -> None:
 
     test_start = datetime.strptime("2022-02-01", "%Y-%m-%d")
     X_train, X_test, y_train, y_test = feature_view.train_test_split(test_start=test_start)
+
+    validate_train_test_split(X_train, X_test, y_train, y_test)
 
     logger.info("🧼 Preprocesando: eliminando columnas clave")
     dates = X_test["date_of_interest"].copy()
