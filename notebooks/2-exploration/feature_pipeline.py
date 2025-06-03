@@ -121,4 +121,4 @@ except ImportError:
 logger.info("📤 Insertar datos en Feature Store")
 covid_fg.insert(covid_df, wait=True)
 
-logger.info("✅ COVID-19 data inserted successfully")
+logger.info("✅ COVID-19 data inserted successfully!")
