@@ -92,6 +92,7 @@ covid_df = covid_df[expected_columns]
 logger.debug(f"✅ Shape: {covid_df.shape}")
 logger.debug(f"🧬 Dtypes: {covid_df.dtypes}")
 
+
 covid_df.rename(
     columns={
         "case_count": "CASE_COUNT",
@@ -110,6 +111,7 @@ covid_df.rename(
 # (Opcional) Validación con Pandera
 try:
     from src.validations.covid_schema import covid_schema
+
 
     covid_df = covid_schema.validate(covid_df)
     logger.info("✔️ Validación completada")
