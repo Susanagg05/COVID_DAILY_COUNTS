@@ -92,9 +92,25 @@ covid_df = covid_df[expected_columns]
 logger.debug(f"✅ Shape: {covid_df.shape}")
 logger.debug(f"🧬 Dtypes: {covid_df.dtypes}")
 
+
+covid_df.rename(
+    columns={
+        "case_count": "CASE_COUNT",
+        "probable_case_count": "PROBABLE_CASE_COUNT",
+        "hospitalized_count": "HOSPITALIZED_COUNT",
+        "death_count": "DEATH_COUNT",
+        "case_count_7day_avg": "CASE_COUNT_7DAY_AVG",
+        "all_case_count_7day_avg": "ALL_CASE_COUNT_7DAY_AVG",
+        "hosp_count_7day_avg": "HOSP_COUNT_7DAY_AVG",
+        "death_count_7day_avg": "DEATH_COUNT_7DAY_AVG",
+        "date_of_interest": "date_of_interest",
+    },
+    inplace=True,
+)
+
 # (Opcional) Validación con Pandera
 try:
-    from validations.covid_schema import covid_schema
+    from src.validations.covid_schema import covid_schema
 
     covid_df = covid_schema.validate(covid_df)
     logger.info("✔️ Validación completada")
@@ -104,4 +120,4 @@ except ImportError:
 logger.info("📤 Insertar datos en Feature Store")
 covid_fg.insert(covid_df, wait=True)
 
-logger.info("✅ COVID-19 data inserted successfully")
+logger.info("✅ COVID-19 data inserted successfully!")
