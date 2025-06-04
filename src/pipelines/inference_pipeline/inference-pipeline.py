@@ -1,14 +1,13 @@
 # src/pipelines/inference_pipeline/inference_pipeline.py
 
+import datetime
 import os
 import sys
-import datetime
 from pathlib import Path
 
 import hopsworks
-import pandas as pd
-from xgboost import XGBRegressor
 from loguru import logger
+from xgboost import XGBRegressor
 
 # Setup path
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -22,7 +21,7 @@ import config  # noqa: E402
 settings = config.HopsworksSettings(_env_file=_PROJECT_ROOT / ".env")
 
 
-def run_inference():
+def run_inference() -> None:
     logger.info("🔐 Conectando a Hopsworks...")
     if settings.HOPSWORKS_API_KEY is not None:
         os.environ["HOPSWORKS_API_KEY"] = settings.HOPSWORKS_API_KEY.get_secret_value()
@@ -33,7 +32,7 @@ def run_inference():
     mr = project.get_model_registry()
 
     models = mr.get_models(name="covid_death_predictor_xgboost")
-    
+
     for model_metadata in reversed(models):
         try:
             model_path = model_metadata.download()
@@ -41,7 +40,7 @@ def run_inference():
         except Exception as e:
             logger.warning(f"❌ No se pudo descargar modelo versión {model_metadata.version}: {e}")
     else:
-        raise RuntimeError("No se pudo descargar ningún modelo válido.")
+        raise RuntimeError()
 
     logger.info(f"📥 Modelo descargado: {model_path}")
     model = XGBRegressor()
@@ -50,13 +49,14 @@ def run_inference():
     logger.info("🧠 Cargando Feature View")
     fv = model_metadata.get_feature_view()
 
-    
     # Obtener predicción para los últimos 10 días (ajustable)
     recent_date = datetime.datetime.now() - datetime.timedelta(days=10)
     recent_data = fv.get_batch_data(start_time=recent_date.strftime("%Y-%m-%d"))
 
     logger.info("🔮 Generando predicciones...")
-    X_pred = recent_data.drop(columns=[col for col in ["death_count", "date_of_interest"] if col in recent_data.columns])
+    X_pred = recent_data.drop(
+        columns=[col for col in ["death_count", "date_of_interest"] if col in recent_data.columns]
+    )
     predictions = model.predict(X_pred)
 
     output_df = recent_data[["date_of_interest"]].copy()
@@ -76,6 +76,7 @@ def run_inference():
 
     pred_fg.insert(output_df, wait=True)
     logger.success("✅ Predicciones almacenadas correctamente")
+
 
 if __name__ == "__main__":
     run_inference()
