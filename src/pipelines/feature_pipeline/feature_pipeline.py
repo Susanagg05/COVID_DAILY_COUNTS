@@ -19,8 +19,9 @@ _SRCDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if _SRCDIR not in sys.path:
     sys.path.insert(0, _SRCDIR)
 
-from src import config  # noqa: E402
-from src.utils import util  # noqa: E402
+
+import config  # noqa: E402
+from utils import util  # noqa: E402
 
 # Cargar variables del entorno
 settings = config.HopsworksSettings(_env_file=f"{_SRCDIR}/.env")
