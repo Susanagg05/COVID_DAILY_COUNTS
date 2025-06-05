@@ -151,7 +151,6 @@ pydantic-core==2.33.2
 pydantic-settings==2.9.1
 pygments==2.19.1
 pyhumps==1.6.1
-pyjks==20.0.0
 pymysql==1.1.1
 pynomaly==0.3.4
 pyparsing==3.2.3
@@ -201,7 +200,6 @@ toml==0.10.2
 tornado==6.5.1
 tqdm==4.67.1
 traitlets==5.14.3
-twofish==0.3.0
 typer==0.15.3
 types-python-dateutil==2.9.0.20241206
 typing-extensions==4.13.2
