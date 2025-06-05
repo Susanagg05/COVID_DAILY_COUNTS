@@ -1,7 +1,7 @@
 [project]
-name = "MTA-NYCTrains"
+name = "covid_daily_counts"
 version = "0.1.0"
-description = "This repository implements a real-time data processing and analysis system for MTA NYC trains"
+description = "Predicción de muertes por COVID-19 en NYC"
 authors = [
     "Susana Gutierrez & Alejandro Londoño <peter.parker@web.com>",
 ]
@@ -9,30 +9,32 @@ requires-python = ">=3.12"
 readme = "README.md"
 
 dependencies = [
+    "pandas>=2.1.4",
+    "xgboost>=3.0.2",
+    "streamlit>=1.35.0",
+    "scikit-learn>=1.6.1",
+    "deepchecks>=0.19.1",
+    "matplotlib>=3.10.3",
+    "joblib>=1.5.1",
+    "pyarrow>=19.0.1"
 ]
 
 [project.urls]
-documentation = "https://Susanagg05.github.io/MTA-NYCTrains"
-repository = "https://github.com/Susanagg05/MTA-NYCTrains"
-
+documentation = "https://Susanagg05.github.io/COVID_DAILY_COUNTS"
+repository = "https://github.com/Susanagg05/COVID_DAILY_COUNTS"
 
 [dependency-groups]
 dev = [
-    "pre-commit>=4.2.0", # Code linting and formatting
-    "pytest>=8.3.5", # Testing framework
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
     "pytest-cookies>=0.7.0",
     "pytest-cov>=6.1.1",
-    "cruft[pyproject]>=2.15.0",# Automated Cookiecutter template synchronization
+    "cruft[pyproject]>=2.15.0"
 ]
-
-#
 
 [tool.uv]
 package = false
-default-groups = [
-    "dev",
-#
-]
+default-groups = []  # No instala 'dev' por defecto, ideal para Streamlit Cloud
 
 [build-system]
 requires = ["hatchling"]
