@@ -2,6 +2,7 @@
 
 import pandas as pd
 from xgboost import XGBRegressor
+
 import streamlit as st
 
 HIGH_DEATH_THRESHOLD = 50
@@ -55,7 +56,8 @@ def user_input_form() -> pd.DataFrame:
 def main() -> None:
     st.title("📉 Predicción de muertes por COVID-19 en NYC")
     st.markdown(
-        "Este modelo predice la cantidad de muertes en función de variables epidemiológicas oficiales de la ciudad de Nueva York."
+        "Este modelo predice la cantidad de muertes en función de "
+        + "variables epidemiológicas oficiales de la ciudad de Nueva York."
     )
 
     model = load_model()
