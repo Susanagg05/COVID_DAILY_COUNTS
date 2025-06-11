@@ -2,7 +2,7 @@ name: feature-pipeline
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Todos los días a las 9am UTC
+    #- cron: '0 9 * * *'  # Todos los días a las 9am UTC
   workflow_dispatch:
 
 jobs:
